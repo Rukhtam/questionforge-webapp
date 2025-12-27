@@ -1,0 +1,119 @@
+// QuestionForge - Prisma Schema
+// AI-powered educational question and worksheet generator
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// User model for authentication
+model User {
+  id         String      @id @default(cuid())
+  email      String      @unique
+  password   String
+  name       String?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  questions  Question[]
+  worksheets Worksheet[]
+}
+
+// Subject model (seeded data)
+model Subject {
+  id       String  @id @default(cuid())
+  name     String  @unique
+  nameUrdu String?
+  icon     String?
+  topics   Topic[]
+}
+
+// Topic model - belongs to Subject
+model Topic {
+  id         String     @id @default(cuid())
+  name       String
+  subjectId  String
+  gradeLevel String?
+  subject    Subject    @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  questions  Question[]
+
+  @@index([subjectId])
+}
+
+// Question type enum
+enum QuestionType {
+  MCQ
+  FILL_BLANK
+  SHORT_ANSWER
+  LONG_ANSWER
+  TRUE_FALSE
+}
+
+// Difficulty level enum
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+  CAMBRIDGE
+  CADET
+}
+
+// Question model - core entity
+model Question {
+  id                 String              @id @default(cuid())
+  userId             String
+  topicId            String
+  questionText       String
+  questionType       QuestionType
+  difficulty         Difficulty
+  options            Json?               // For MCQ: {"A": "text", "B": "text", "C": "text", "D": "text"}
+  correctAnswer      String
+  explanation        String?
+  marks              Int                 @default(1)
+  isFavorite         Boolean             @default(false)
+  isAiGenerated      Boolean             @default(false)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topic              Topic               @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  worksheetQuestions WorksheetQuestion[]
+
+  @@index([userId])
+  @@index([topicId])
+  @@index([questionType])
+  @@index([difficulty])
+}
+
+// Worksheet model - collection of questions
+model Worksheet {
+  id         String              @id @default(cuid())
+  userId     String
+  title      String
+  schoolName String?
+  examName   String?
+  className  String?
+  date       DateTime?
+  totalMarks Int?
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+  user       User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questions  WorksheetQuestion[]
+
+  @@index([userId])
+}
+
+// Junction table for Worksheet-Question many-to-many with order
+model WorksheetQuestion {
+  worksheetId String
+  questionId  String
+  order       Int
+  customMarks Int?
+  worksheet   Worksheet @relation(fields: [worksheetId], references: [id], onDelete: Cascade)
+  question    Question  @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@id([worksheetId, questionId])
+  @@index([worksheetId])
+  @@index([questionId])
+}
