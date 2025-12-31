@@ -17,7 +17,7 @@ const subjects = [
   {
     name: "Math",
     nameUrdu: "ریاضی",
-    icon: "calculator",
+    icon: "\u{1F4D0}", // Triangular ruler emoji
     topics: [
       { name: "Algebra", gradeLevel: "6-8" },
       { name: "Geometry", gradeLevel: "6-8" },
@@ -32,7 +32,7 @@ const subjects = [
   {
     name: "English",
     nameUrdu: "انگلش",
-    icon: "book-open",
+    icon: "\u{1F4DA}", // Books emoji
     topics: [
       { name: "Grammar", gradeLevel: "1-12" },
       { name: "Vocabulary", gradeLevel: "1-12" },
@@ -46,7 +46,7 @@ const subjects = [
   {
     name: "Science",
     nameUrdu: "سائنس",
-    icon: "flask",
+    icon: "\u{1F52C}", // Microscope emoji
     topics: [
       { name: "Physics", gradeLevel: "6-12" },
       { name: "Chemistry", gradeLevel: "6-12" },
@@ -60,7 +60,7 @@ const subjects = [
   {
     name: "Urdu",
     nameUrdu: "اردو",
-    icon: "pen-tool",
+    icon: "\u{270D}\u{FE0F}", // Writing hand emoji
     topics: [
       { name: "Grammar (Qawaid)", gradeLevel: "1-12" },
       { name: "Poetry (Shairi)", gradeLevel: "3-12" },
@@ -73,7 +73,7 @@ const subjects = [
   {
     name: "Islamiyat",
     nameUrdu: "اسلامیات",
-    icon: "moon",
+    icon: "\u{262A}\u{FE0F}", // Star and crescent emoji
     topics: [
       { name: "Quran", gradeLevel: "1-12" },
       { name: "Hadith", gradeLevel: "4-12" },
@@ -87,7 +87,7 @@ const subjects = [
   {
     name: "General Knowledge",
     nameUrdu: "عمومی علم",
-    icon: "globe",
+    icon: "\u{1F30D}", // Earth globe Europe-Africa emoji
     topics: [
       { name: "Pakistan Studies", gradeLevel: "5-12" },
       { name: "World Geography", gradeLevel: "4-10" },

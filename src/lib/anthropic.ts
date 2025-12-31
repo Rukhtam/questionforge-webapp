@@ -2,7 +2,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
-export const GEMINI_MODEL = "gemini-1.5-flash"; // Free tier model
+export const GEMINI_MODEL = "gemini-1.5-pro"; // Current production model
 
 export interface GeneratedQuestion {
   questionText: string;
@@ -90,7 +90,7 @@ Important:
 - Do not include any text outside the JSON array`;
 
   try {
-    const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
