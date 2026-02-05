@@ -1,8 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Mail, User, ArrowLeft, AlertCircle, Check, X } from "lucide-react";
+
+// Password strength checker
+function getPasswordStrength(password: string): { score: number; label: string; color: string } {
+  let score = 0;
+  if (password.length >= 6) score++;
+  if (password.length >= 8) score++;
+  if (/[A-Z]/.test(password)) score++;
+  if (/[a-z]/.test(password)) score++;
+  if (/[0-9]/.test(password)) score++;
+  if (/[^A-Za-z0-9]/.test(password)) score++;
+
+  if (score <= 2) return { score, label: "Weak", color: "bg-red-500" };
+  if (score <= 4) return { score, label: "Medium", color: "bg-yellow-500" };
+  return { score, label: "Strong", color: "bg-green-500" };
+}
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -13,6 +31,10 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const passwordStrength = useMemo(() => getPasswordStrength(password), [password]);
+  const passwordsMatch = password && confirmPassword && password === confirmPassword;
+  const passwordsDontMatch = password && confirmPassword && password !== confirmPassword;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,30 +83,45 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 px-4 py-8">
-      <div className="w-full max-w-md">
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem 1.5rem' }} className="bg-gradient-to-b from-gray-950 to-gray-900">
+      <div style={{ width: '100%', maxWidth: '28rem', marginLeft: 'auto', marginRight: 'auto' }}>
         {/* Logo */}
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2">
-            <div className="h-10 w-10 rounded-lg bg-blue-500 flex items-center justify-center">
-              <span className="text-white font-bold text-xl">Q</span>
+        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ height: '3rem', width: '3rem', borderRadius: '0.75rem', boxShadow: '0 4px 14px rgba(59, 130, 246, 0.3)' }} className="bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+              <span style={{ fontSize: '1.5rem', fontWeight: '700', color: 'white' }}>Q</span>
             </div>
-            <span className="text-2xl font-bold text-gray-900 dark:text-white">
+            <span style={{ fontSize: '1.5rem', fontWeight: '700', color: 'white', letterSpacing: '-0.025em' }}>
               QuestionForge
             </span>
           </Link>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">
+          <p style={{ marginTop: '0.75rem', color: '#9CA3AF', fontSize: '1rem' }}>
             Create your free account
           </p>
         </div>
 
-        {/* Registration Form */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-8">
-          <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Registration Form - Modern card styling */}
+        <div style={{
+          borderRadius: '1rem',
+          border: '1px solid rgba(55, 65, 81, 0.5)',
+          background: 'linear-gradient(145deg, rgba(31, 41, 55, 0.6) 0%, rgba(17, 24, 39, 0.8) 100%)',
+          padding: '2.5rem',
+          boxShadow: '0 4px 24px rgba(0, 0, 0, 0.2)'
+        }}>
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
             {/* Error Message */}
             {error && (
-              <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-                <p className="text-red-600 dark:text-red-400 text-sm text-center">
+              <div style={{
+                padding: '1rem',
+                backgroundColor: 'rgba(127, 29, 29, 0.2)',
+                border: '1px solid #991B1B',
+                borderRadius: '0.75rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem'
+              }} role="alert">
+                <AlertCircle style={{ height: '1.25rem', width: '1.25rem', color: '#F87171', flexShrink: 0 }} />
+                <p style={{ color: '#F87171', fontSize: '0.9375rem' }}>
                   {error}
                 </p>
               </div>
@@ -94,18 +131,24 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="name"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                style={{
+                  display: 'block',
+                  fontSize: '0.9375rem',
+                  fontWeight: '600',
+                  color: '#E5E7EB',
+                  marginBottom: '0.75rem'
+                }}
               >
                 Full Name
               </label>
-              <input
+              <Input
                 id="name"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 autoComplete="name"
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                 placeholder="John Doe"
+                icon={<User style={{ height: '1.25rem', width: '1.25rem' }} />}
               />
             </div>
 
@@ -113,19 +156,25 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                style={{
+                  display: 'block',
+                  fontSize: '0.9375rem',
+                  fontWeight: '600',
+                  color: '#E5E7EB',
+                  marginBottom: '0.75rem'
+                }}
               >
-                Email Address <span className="text-red-500">*</span>
+                Email Address <span style={{ color: '#F87171' }}>*</span>
               </label>
-              <input
+              <Input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 autoComplete="email"
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                 placeholder="you@example.com"
+                icon={<Mail style={{ height: '1.25rem', width: '1.25rem' }} />}
               />
             </div>
 
@@ -133,85 +182,109 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                style={{
+                  display: 'block',
+                  fontSize: '0.9375rem',
+                  fontWeight: '600',
+                  color: '#E5E7EB',
+                  marginBottom: '0.75rem'
+                }}
               >
-                Password <span className="text-red-500">*</span>
+                Password <span style={{ color: '#F87171' }}>*</span>
               </label>
-              <input
+              <Input
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 autoComplete="new-password"
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                 placeholder="At least 6 characters"
               />
+              {/* Password Strength Indicator */}
+              {password && (
+                <div style={{ marginTop: '0.75rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <div style={{ flex: 1, height: '0.375rem', backgroundColor: '#1F2937', borderRadius: '9999px', overflow: 'hidden' }}>
+                      <div
+                        style={{
+                          height: '100%',
+                          width: `${(passwordStrength.score / 6) * 100}%`,
+                          backgroundColor: passwordStrength.label === "Weak" ? '#EF4444' : passwordStrength.label === "Medium" ? '#F59E0B' : '#22C55E',
+                          transition: 'all 0.3s ease'
+                        }}
+                      />
+                    </div>
+                    <span style={{
+                      fontSize: '0.75rem',
+                      fontWeight: '500',
+                      color: passwordStrength.label === "Weak" ? '#F87171' : passwordStrength.label === "Medium" ? '#FBBF24' : '#4ADE80'
+                    }}>
+                      {passwordStrength.label}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Confirm Password Field */}
             <div>
               <label
                 htmlFor="confirmPassword"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                style={{
+                  display: 'block',
+                  fontSize: '0.9375rem',
+                  fontWeight: '600',
+                  color: '#E5E7EB',
+                  marginBottom: '0.75rem'
+                }}
               >
-                Confirm Password <span className="text-red-500">*</span>
+                Confirm Password <span style={{ color: '#F87171' }}>*</span>
               </label>
-              <input
+              <Input
                 id="confirmPassword"
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 autoComplete="new-password"
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                 placeholder="Confirm your password"
+                error={passwordsDontMatch ? "Passwords do not match" : undefined}
               />
+              {passwordsMatch && (
+                <div style={{ marginTop: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.375rem', color: '#4ADE80', fontSize: '0.875rem' }}>
+                  <Check style={{ height: '1rem', width: '1rem' }} />
+                  <span>Passwords match</span>
+                </div>
+              )}
             </div>
 
             {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
-            >
-              {isLoading ? (
-                <>
-                  <svg
-                    className="animate-spin h-5 w-5"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    />
-                  </svg>
-                  Creating account...
-                </>
-              ) : (
-                "Create Account"
-              )}
-            </button>
+            <div style={{ marginTop: '0.5rem' }}>
+              <Button
+                type="submit"
+                style={{ width: '100%' }}
+                size="lg"
+                isLoading={isLoading}
+              >
+                {isLoading ? "Creating account..." : "Create Account"}
+              </Button>
+            </div>
           </form>
 
           {/* Login Link */}
-          <div className="mt-6 text-center">
-            <p className="text-gray-600 dark:text-gray-400">
+          <div style={{
+            marginTop: '2rem',
+            paddingTop: '1.75rem',
+            borderTop: '1px solid rgba(55, 65, 81, 0.5)',
+            textAlign: 'center'
+          }}>
+            <p style={{ fontSize: '0.9375rem', color: '#9CA3AF' }}>
               Already have an account?{" "}
               <Link
                 href="/login"
-                className="text-blue-500 hover:text-blue-600 font-medium"
+                style={{ fontWeight: '600', color: '#60A5FA' }}
+                className="hover:text-blue-400 transition-colors"
               >
                 Sign in
               </Link>
@@ -220,11 +293,22 @@ export default function RegisterPage() {
         </div>
 
         {/* Back to Home */}
-        <div className="mt-6 text-center">
+        <div style={{ marginTop: '2rem', textAlign: 'center' }}>
           <Link
             href="/"
-            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-sm"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              color: '#9CA3AF',
+              fontSize: '0.9375rem',
+              padding: '0.5rem 1rem',
+              borderRadius: '0.5rem',
+              transition: 'all 0.2s ease'
+            }}
+            className="hover:text-white hover:bg-gray-800/50"
           >
+            <ArrowLeft style={{ height: '1.125rem', width: '1.125rem' }} />
             Back to Home
           </Link>
         </div>

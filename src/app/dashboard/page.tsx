@@ -3,16 +3,26 @@
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 
+// Time-based greeting helper
+function getTimeBasedGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 17) return "Good afternoon";
+  return "Good evening";
+}
+
 export default function DashboardPage() {
   const { data: session } = useSession();
+  const greeting = getTimeBasedGreeting();
 
   const stats = [
     {
       name: "Total Questions",
       value: "0",
+      href: "/dashboard/questions",
       icon: (
         <svg
-          className="h-6 w-6"
+          className="h-10 w-10"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -30,9 +40,10 @@ export default function DashboardPage() {
     {
       name: "Worksheets",
       value: "0",
+      href: "/dashboard/worksheets",
       icon: (
         <svg
-          className="h-6 w-6"
+          className="h-10 w-10"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -50,9 +61,10 @@ export default function DashboardPage() {
     {
       name: "Favorites",
       value: "0",
+      href: "/dashboard/favorites",
       icon: (
         <svg
-          className="h-6 w-6"
+          className="h-10 w-10"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -70,9 +82,10 @@ export default function DashboardPage() {
     {
       name: "AI Generated",
       value: "0",
+      href: "/dashboard/generate",
       icon: (
         <svg
-          className="h-6 w-6"
+          className="h-10 w-10"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -96,7 +109,7 @@ export default function DashboardPage() {
       href: "/dashboard/generate",
       icon: (
         <svg
-          className="h-8 w-8"
+          className="h-10 w-10"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -117,7 +130,7 @@ export default function DashboardPage() {
       href: "/dashboard/worksheets/new",
       icon: (
         <svg
-          className="h-8 w-8"
+          className="h-10 w-10"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -138,7 +151,7 @@ export default function DashboardPage() {
       href: "/dashboard/questions",
       icon: (
         <svg
-          className="h-8 w-8"
+          className="h-10 w-10"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -156,110 +169,192 @@ export default function DashboardPage() {
   ];
 
   const getColorClasses = (color: string) => {
-    const colors: Record<string, { bg: string; text: string; icon: string }> = {
+    const colors: Record<string, { bg: string; gradient: string; text: string; icon: string; hover: string }> = {
       blue: {
-        bg: "bg-blue-50 dark:bg-blue-900/20",
-        text: "text-blue-600 dark:text-blue-400",
-        icon: "text-blue-500",
+        bg: "bg-blue-900/20",
+        gradient: "from-blue-800 to-blue-900",
+        text: "text-blue-300",
+        icon: "text-blue-400",
+        hover: "hover:border-blue-700",
       },
       green: {
-        bg: "bg-green-50 dark:bg-green-900/20",
-        text: "text-green-600 dark:text-green-400",
-        icon: "text-green-500",
+        bg: "bg-green-900/20",
+        gradient: "from-green-800 to-green-900",
+        text: "text-green-300",
+        icon: "text-green-400",
+        hover: "hover:border-green-700",
       },
       yellow: {
-        bg: "bg-yellow-50 dark:bg-yellow-900/20",
-        text: "text-yellow-600 dark:text-yellow-400",
-        icon: "text-yellow-500",
+        bg: "bg-yellow-900/20",
+        gradient: "from-yellow-800 to-yellow-900",
+        text: "text-yellow-300",
+        icon: "text-yellow-400",
+        hover: "hover:border-yellow-700",
       },
       purple: {
-        bg: "bg-purple-50 dark:bg-purple-900/20",
-        text: "text-purple-600 dark:text-purple-400",
-        icon: "text-purple-500",
+        bg: "bg-purple-900/20",
+        gradient: "from-purple-800 to-purple-900",
+        text: "text-purple-300",
+        icon: "text-purple-400",
+        hover: "hover:border-purple-700",
       },
     };
     return colors[color] || colors.blue;
   };
 
   return (
-    <div className="space-y-8">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       {/* Welcome Section */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-          Welcome back, {session?.user?.name || "Teacher"}!
+        <h1 style={{ fontSize: '1.875rem', fontWeight: '700', color: 'white' }}>
+          {greeting}, {session?.user?.name || "Teacher"}!
         </h1>
-        <p className="mt-1 text-gray-600 dark:text-gray-400">
+        <p style={{ marginTop: '0.25rem', color: '#9CA3AF' }}>
           Here&apos;s an overview of your question bank
         </p>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Stats Grid - Modern card styling */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
         {stats.map((stat) => {
           const colors = getColorClasses(stat.color);
           return (
-            <div
+            <Link
               key={stat.name}
-              className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700"
+              href={stat.href}
+              style={{
+                borderRadius: '1rem',
+                border: '1px solid #374151',
+                background: 'linear-gradient(145deg, rgba(31, 41, 55, 0.8) 0%, rgba(17, 24, 39, 0.9) 100%)',
+                padding: '1.5rem',
+                display: 'block',
+                transition: 'all 0.2s'
+              }}
+              className="group hover:-translate-y-1 hover:border-gray-600"
             >
-              <div className="flex items-center gap-4">
-                <div className={`p-3 rounded-lg ${colors.bg}`}>
-                  <span className={colors.icon}>{stat.icon}</span>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                  <p style={{ fontSize: '0.875rem', fontWeight: '500', color: '#9CA3AF' }}>
                     {stat.name}
                   </p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <p style={{ fontSize: '1.875rem', fontWeight: '700', letterSpacing: '-0.025em', color: 'white' }}>
                     {stat.value}
                   </p>
                 </div>
+                <div style={{
+                  display: 'flex',
+                  height: '3.5rem',
+                  width: '3.5rem',
+                  flexShrink: 0,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: '0.75rem',
+                  background: stat.color === 'blue' ? 'linear-gradient(135deg, #1E3A5F 0%, #1E40AF 100%)' :
+                             stat.color === 'green' ? 'linear-gradient(135deg, #14532D 0%, #166534 100%)' :
+                             stat.color === 'yellow' ? 'linear-gradient(135deg, #713F12 0%, #A16207 100%)' :
+                             'linear-gradient(135deg, #581C87 0%, #7C3AED 100%)',
+                  transition: 'transform 0.3s'
+                }} className="group-hover:scale-110">
+                  <span style={{ 
+                    color: stat.color === 'blue' ? '#60A5FA' :
+                           stat.color === 'green' ? '#4ADE80' :
+                           stat.color === 'yellow' ? '#FBBF24' :
+                           '#A78BFA'
+                  }}>{stat.icon}</span>
+                </div>
               </div>
-            </div>
+            </Link>
           );
         })}
       </div>
 
-      {/* Quick Actions */}
-      <div>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+      {/* Quick Actions - Modern styling */}
+      <div style={{ marginTop: '1rem' }}>
+        <h2 style={{ fontSize: '1.125rem', fontWeight: '600', color: 'white', marginBottom: '1.5rem' }}>
           Quick Actions
         </h2>
-        <div className="grid md:grid-cols-3 gap-4">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
           {quickActions.map((action) => {
-            const colors = getColorClasses(action.color);
             return (
               <Link
                 key={action.name}
                 href={action.href}
-                className="group bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-lg transition-all"
+                style={{
+                  borderRadius: '1rem',
+                  border: '1px solid #374151',
+                  background: 'linear-gradient(145deg, rgba(31, 41, 55, 0.8) 0%, rgba(17, 24, 39, 0.9) 100%)',
+                  padding: '1.5rem',
+                  display: 'block',
+                  transition: 'all 0.2s'
+                }}
+                className="group hover:-translate-y-1 hover:border-gray-600"
               >
-                <div
-                  className={`inline-flex p-3 rounded-lg ${colors.bg} mb-4 group-hover:scale-110 transition-transform`}
-                >
-                  <span className={colors.icon}>{action.icon}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      height: '4rem',
+                      width: '4rem',
+                      flexShrink: 0,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: '0.75rem',
+                      background: action.color === 'blue' ? 'linear-gradient(135deg, #1E3A5F 0%, #1E40AF 100%)' :
+                                 action.color === 'green' ? 'linear-gradient(135deg, #14532D 0%, #166534 100%)' :
+                                 'linear-gradient(135deg, #581C87 0%, #7C3AED 100%)',
+                      transition: 'transform 0.3s'
+                    }}
+                    className="group-hover:scale-110"
+                  >
+                    <span style={{ 
+                      color: action.color === 'blue' ? '#60A5FA' :
+                             action.color === 'green' ? '#4ADE80' :
+                             '#A78BFA'
+                    }}>{action.icon}</span>
+                  </div>
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <h3 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '0.25rem', color: 'white' }} className="group-hover:text-blue-400 transition-colors">
+                      {action.name}
+                    </h3>
+                    <p style={{ fontSize: '0.875rem', color: '#9CA3AF' }}>
+                      {action.description}
+                    </p>
+                  </div>
                 </div>
-                <h3 className="font-semibold text-gray-900 dark:text-white">
-                  {action.name}
-                </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  {action.description}
-                </p>
               </Link>
             );
           })}
         </div>
       </div>
 
-      {/* Recent Activity Placeholder */}
-      <div>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+      {/* Recent Activity Placeholder - Modern empty state */}
+      <div style={{ marginTop: '1rem' }}>
+        <h2 style={{ fontSize: '1.125rem', fontWeight: '600', color: 'white', marginBottom: '1.5rem' }}>
           Recent Questions
         </h2>
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8 text-center">
-          <div className="inline-flex p-4 rounded-full bg-gray-100 dark:bg-gray-700 mb-4">
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: '1rem',
+          border: '2px dashed #374151',
+          backgroundColor: 'rgba(17, 24, 39, 0.5)',
+          padding: '4rem 1.5rem',
+          textAlign: 'center'
+        }}>
+          <div style={{
+            marginBottom: '1rem',
+            display: 'flex',
+            height: '4rem',
+            width: '4rem',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: '9999px',
+            backgroundColor: '#1F2937'
+          }}>
             <svg
-              className="h-8 w-8 text-gray-400"
+              style={{ height: '2rem', width: '2rem', color: '#6B7280' }}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -268,22 +363,37 @@ export default function DashboardPage() {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
           </div>
-          <h3 className="font-medium text-gray-900 dark:text-white mb-1">
+          <h3 style={{ marginBottom: '0.5rem', fontSize: '1rem', fontWeight: '600', color: 'white' }}>
             No questions yet
           </h3>
-          <p className="text-gray-500 dark:text-gray-400 mb-4">
-            Start generating questions to build your bank
+          <p style={{ marginBottom: '1.5rem', maxWidth: '24rem', fontSize: '0.9375rem', color: '#9CA3AF', lineHeight: '1.5' }}>
+            Start generating questions with AI to build your question bank
           </p>
           <Link
             href="/dashboard/generate"
-            className="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 rounded-lg transition-colors"
+            style={{
+              display: 'inline-flex',
+              height: '3rem',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.5rem',
+              borderRadius: '0.75rem',
+              backgroundColor: '#2563EB',
+              padding: '0 1.5rem',
+              fontSize: '0.9375rem',
+              fontWeight: '600',
+              color: '#FFFFFF',
+              transition: 'all 0.2s ease',
+              textDecoration: 'none'
+            }}
+            className="hover:bg-blue-500"
           >
             <svg
-              className="h-5 w-5"
+              style={{ height: '1.25rem', width: '1.25rem' }}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
